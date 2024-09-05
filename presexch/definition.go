@@ -1037,7 +1037,7 @@ func limitDisclosure(filterResults []constraintsFilterResult,
 					"type",
 					"@context",
 					"issuer",
-					"issuanceDate")
+					"validFrom")
 
 				templateObj["credentialSubject"] = copyOnlySubjectIDs(credentialContents.Subject)
 

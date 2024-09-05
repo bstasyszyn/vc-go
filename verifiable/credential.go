@@ -45,7 +45,7 @@ const (
 	schemaPropertyType              = "type"
 	schemaPropertyCredentialSubject = "credentialSubject"
 	schemaPropertyIssuer            = "issuer"
-	schemaPropertyIssuanceDate      = "issuanceDate"
+	schemaPropertyIssuanceDate      = "validFrom"
 
 	jsonLDStructureErrStr = "JSON-LD doc has different structure after compaction"
 )
@@ -137,7 +137,7 @@ const DefaultSchemaTemplate = `{
         }
       ]
     },
-    "issuanceDate": {
+    "validFrom": {
       "type": "string",
       "format": "date-time"
     },
@@ -248,6 +248,8 @@ const jsonSchema2018Type = "JsonSchemaValidator2018"
 const (
 	// https://www.w3.org/TR/vc-data-model/#base-context
 	baseContext = "https://www.w3.org/2018/credentials/v1"
+
+	baseContextV2 = "https://www.w3.org/ns/credentials/v2"
 
 	// https://www.w3.org/TR/vc-data-model/#types
 	vcType = "VerifiableCredential"
@@ -639,12 +641,16 @@ func (vc *Credential) CustomField(name string) interface{} {
 }
 
 const (
-	jsonFldContext        = "@context"
-	jsonFldID             = "id"
-	jsonFldType           = "type"
-	jsonFldSubject        = "credentialSubject"
-	jsonFldIssued         = "issuanceDate"
-	jsonFldExpired        = "expirationDate"
+	jsonFldContext = "@context"
+	jsonFldID      = "id"
+	jsonFldType    = "type"
+	jsonFldSubject = "credentialSubject"
+
+	//deprecated: use jsonValidFrom instead
+	jsonFldIssued = "validFrom"
+	//deprecated: use jsonValidUntil instead
+	jsonFldExpired = "validUntil"
+
 	jsonFldLDProof        = "proof"
 	jsonFldStatus         = "credentialStatus"
 	jsonFldIssuer         = "issuer"
@@ -653,6 +659,10 @@ const (
 	jsonFldTermsOfUse     = "termsOfUse"
 	jsonFldRefreshService = "refreshService"
 	jsonFldSDJWTHashAlg   = "_sd_alg"
+
+	// Credential V2.0 fields
+	jsonValidFrom  = "validFrom"
+	jsonValidUntil = "validUntil"
 )
 
 // CombinedProofChecker universal proof checker for both LD and JWT proofs.
