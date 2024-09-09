@@ -25,7 +25,7 @@ import (
 func TestJWTCredClaimsMarshalJWS(t *testing.T) {
 	proofCreator, proofChecker := testsupport.NewKMSSigVerPair(t, kms.RSARS256Type, "did:example:76e12ec712ebc6f1c221ebfeb1f#key1")
 
-	vc, err := parseTestCredential(t, []byte(validCredential), WithDisabledProofCheck())
+	vc, err := parseTestCredential(t, []byte(v11ValidCredential), WithDisabledProofCheck())
 	require.NoError(t, err)
 
 	jwtClaims, err := vc.JWTClaims(true)

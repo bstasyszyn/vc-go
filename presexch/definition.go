@@ -1032,12 +1032,23 @@ func limitDisclosure(filterResults []constraintsFilterResult,
 
 				contexts = append(contexts, credentialContents.CustomContext...)
 
-				templateObj := jsonutil.Select(credential.ToRawJSON(),
-					"id",
-					"type",
-					"@context",
-					"issuer",
-					"issuanceDate")
+				var templateObj map[string]interface{}
+
+				if verifiable.IsBaseContext(credentialContents.Context, verifiable.V2ContextURI) {
+					templateObj = jsonutil.Select(credential.ToRawJSON(),
+						"id",
+						"type",
+						"@context",
+						"issuer",
+						"validFrom")
+				} else {
+					templateObj = jsonutil.Select(credential.ToRawJSON(),
+						"id",
+						"type",
+						"@context",
+						"issuer",
+						"issuanceDate")
+				}
 
 				templateObj["credentialSubject"] = copyOnlySubjectIDs(credentialContents.Subject)
 

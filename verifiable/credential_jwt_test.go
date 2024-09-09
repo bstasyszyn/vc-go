@@ -34,7 +34,8 @@ func TestRefineVcFromJwtClaims(t *testing.T) {
 	expired := time.Date(2029, time.August, 10, 0, 0, 0, 0, time.UTC)
 
 	vcMap := map[string]interface{}{
-		"issuer": "unknown",
+		jsonFldContext: []string{V1ContextURI},
+		"issuer":       "unknown",
 	}
 	credClaims := &jwt.Claims{
 		Issuer:    issuerID,
@@ -49,7 +50,7 @@ func TestRefineVcFromJwtClaims(t *testing.T) {
 		VC:     vcMap,
 	}
 
-	jwtCredClaims.refineFromJWTClaims()
+	require.NoError(t, jwtCredClaims.refineFromJWTClaims())
 
 	require.Equal(t, issuerID, vcMap["issuer"])
 	require.Equal(t, "2019-08-10T00:00:00Z", vcMap["issuanceDate"])
