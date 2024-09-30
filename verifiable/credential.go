@@ -585,11 +585,22 @@ const (
 )
 
 const (
-	// https://www.w3.org/TR/vc-data-model/#types
-	vcType = "VerifiableCredential"
+	// VCType is the required Type for Verifiable Credentials.
+	// See https://www.w3.org/TR/vc-data-model/#types
+	VCType = "VerifiableCredential"
 
-	// https://www.w3.org/TR/vc-data-model/#presentations-0
-	vpType = "VerifiablePresentation"
+	// VPType is the required Type for Verifiable Credentials.
+	// See https://www.w3.org/TR/vc-data-model/#presentations-0
+	VPType = "VerifiablePresentation"
+
+	// VCEnvelopedType indicates that the verifiable credential is specified in the verifiable presentation
+	// in an enveloped format.
+	// See https://www.w3.org/TR/vc-data-model-2.0/#enveloped-verifiable-credentials
+	VCEnvelopedType = "EnvelopedVerifiableCredential"
+
+	// VPEnvelopedType indicates that the verifiable presentation is given as an enveloped verifiable presentation.
+	// https://www.w3.org/TR/vc-data-model-2.0/#enveloped-verifiable-presentations
+	VPEnvelopedType = "EnvelopedVerifiablePresentation"
 )
 
 // vcModelValidationMode defines constraint put on context and type of VC.
@@ -1167,7 +1178,7 @@ func WithBaseContextExtendedValidation(baseContext string, customContexts, custo
 			opts.allowedCustomTypes[context] = true
 		}
 
-		opts.allowedCustomTypes[vcType] = true
+		opts.allowedCustomTypes[VCType] = true
 	}
 }
 
@@ -1477,7 +1488,7 @@ func validateCredential(vcc *CredentialContents, vcJSON JSONObject, vcOpts *cred
 }
 
 func validateBaseContext(vcJSON JSONObject, vcc *CredentialContents, vcOpts *credentialOpts) error {
-	if len(vcc.Types) > 1 || vcc.Types[0] != vcType {
+	if len(vcc.Types) > 1 || vcc.Types[0] != VCType {
 		return errors.New("violated type constraint: not base only type defined")
 	}
 

@@ -51,7 +51,8 @@ const (
 	// FormatJWTVC presentation exchange format.
 	FormatJWTVC = "jwt_vc"
 	// FormatJWTVP presentation exchange format.
-	FormatJWTVP = "jwt_vp"
+	FormatJWTVP          = "jwt_vp"
+	FormatEnvelopedJWTVP = "enveloped_jwt_vp"
 	// FormatLDP presentation exchange format.
 	FormatLDP = "ldp"
 	// FormatLDPVC presentation exchange format.
@@ -81,16 +82,18 @@ func (v *Preference) isRequired() bool {
 
 // Format describes PresentationDefinition`s Format field.
 type Format struct {
-	Jwt   *JwtType `json:"jwt,omitempty"`
-	JwtVC *JwtType `json:"jwt_vc,omitempty"`
-	JwtVP *JwtType `json:"jwt_vp,omitempty"`
+	Jwt            *JwtType `json:"jwt,omitempty"`
+	JwtVC          *JwtType `json:"jwt_vc,omitempty"`
+	JwtVP          *JwtType `json:"jwt_vp,omitempty"`
+	EnvelopedJwtVP *JwtType `json:"enveloped_jwt_vp,omitempty"`
 
 	Ldp   *LdpType `json:"ldp,omitempty"`
 	LdpVC *LdpType `json:"ldp_vc,omitempty"`
 	LdpVP *LdpType `json:"ldp_vp,omitempty"`
 
-	CwtVC *CwtType `json:"cwt_vc,omitempty"`
-	CwtVP *CwtType `json:"cwt_vp,omitempty"`
+	CwtVC          *CwtType `json:"cwt_vc,omitempty"`
+	CwtVP          *CwtType `json:"cwt_vp,omitempty"`
+	EnvelopedCwtVP *CwtType `json:"enveloped_cwt_vp,omitempty"`
 }
 
 func (f *Format) notNil() bool {
@@ -568,6 +571,7 @@ func presentation(credentials ...*verifiable.Credential) (*verifiable.Presentati
 	vp, e := verifiable.NewPresentation(
 		verifiable.WithCredentials(credentials...),
 		verifiable.WithBaseContext(baseContext),
+		verifiable.WithType(verifiable.VPEnvelopedType), // FIXME: should be configurable
 	)
 	if e != nil {
 		return nil, e

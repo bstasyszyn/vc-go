@@ -168,7 +168,10 @@ func parseTypedIDObj(typedIDObj JSONObject) (TypedID, error) {
 func serializeTypedIDObj(typedID TypedID) JSONObject {
 	json := jsonutil.ShallowCopyObj(typedID.CustomFields)
 
-	json[jsonFldTypedIDID] = typedID.ID
+	if typedID.ID != "" {
+		json[jsonFldTypedIDID] = typedID.ID
+	}
+
 	json[jsonFldTypedIDType] = typedID.Type
 
 	return json

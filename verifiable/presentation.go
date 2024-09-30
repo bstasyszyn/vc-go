@@ -337,7 +337,7 @@ type Presentation struct {
 func NewPresentation(opts ...CreatePresentationOpt) (*Presentation, error) {
 	p := Presentation{
 		Context:     []string{V1ContextURI},
-		Type:        []string{vpType},
+		Type:        []string{VPType},
 		credentials: []*Credential{},
 	}
 
@@ -357,6 +357,15 @@ func WithCredentials(cs ...*Credential) CreatePresentationOpt {
 		for _, c := range cs {
 			p.credentials = append(p.credentials, c)
 		}
+
+		return nil
+	}
+}
+
+// WithType sets the verifiable presentation type.
+func WithType(vpType ...string) CreatePresentationOpt {
+	return func(p *Presentation) error {
+		p.Type = vpType
 
 		return nil
 	}
