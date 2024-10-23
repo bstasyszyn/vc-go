@@ -171,23 +171,35 @@ func getMatchedCreds( //nolint:gocyclo,funlen
 		typelessVP := interface{}(nil)
 
 		if vp.JWT != "" {
+			fmt.Println("--------------- getMatchedCreds - Presentation is JWT------------------")
 			token, _, parseErr := jwt.Parse(vp.JWT)
 			if parseErr != nil {
 				return nil, fmt.Errorf("failed to parse vp.JWT: %w", parseErr)
 			}
 
 			typelessVP = token.Payload
+		} else if vp.IsCWT() {
+			fmt.Println("--------------- getMatchedCreds - Presentation is CWT------------------")
+			typelessVP = vp.CWT.VPMap
 		} else {
 			b, marshalErr := vp.MarshalJSON()
 			if marshalErr != nil {
 				return nil, fmt.Errorf("failed to marshal vp: %w", marshalErr)
 			}
 
+			fmt.Println("--------------- getMatchedCreds - Presentation Bytes------------------")
+			fmt.Println(string(b))
+			fmt.Println("---------------------------------------------")
+
 			err = json.Unmarshal(b, &typelessVP)
 			if err != nil {
 				return nil, fmt.Errorf("failed to unmarshal vp: %w", err)
 			}
 		}
+
+		fmt.Println("--------------- getMatchedCreds - Presentation Typeless------------------")
+		fmt.Printf("%+v\n", typelessVP)
+		fmt.Println("---------------------------------------------")
 
 		rawVPs[vpIdx] = typelessVP
 
@@ -299,6 +311,10 @@ func selectVC(typelessVerifiable interface{},
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal credential: %w", err)
 		}
+
+		fmt.Println("############## Verifiable Credential ################")
+		fmt.Println(string(credBits))
+		fmt.Println("#####################################################")
 
 		vc, err = verifiable.ParseCredential(credBits, opts.CredentialOptions...)
 		if err != nil {
