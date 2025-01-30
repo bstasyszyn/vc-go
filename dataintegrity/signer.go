@@ -95,40 +95,42 @@ func (s *Signer) AddProof(doc []byte, opts *models.ProofOptions) ([]byte, error)
 
 	err := resolveVM(opts, s.resolver, "")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("resolve verification method: %w", err)
 	}
+
+	fmt.Printf("***** Creating proof with options: %+v\n", opts)
 
 	proof, err := signerSuite.CreateProof(doc, opts)
 	if err != nil {
 		// TODO update linter to use go 1.20: https://github.com/hyperledger/aries-framework-go/issues/3613
-		return nil, errors.Join(ErrProofGeneration, err) // nolint:typecheck
+		return nil, fmt.Errorf("create proof: %w", errors.Join(ErrProofGeneration, err)) // nolint:typecheck
 	}
 
 	if proof.Type == "" || proof.ProofPurpose == "" || proof.VerificationMethod == "" {
-		return nil, ErrProofGeneration
+		return nil, fmt.Errorf("proof missing required fields: %w", ErrProofGeneration)
 	}
 
 	if proof.Created == "" && signerSuite.RequiresCreated() {
-		return nil, ErrProofGeneration
+		return nil, fmt.Errorf("proof missing required created field: %w", ErrProofGeneration)
 	}
 
 	if opts.Domain != "" && opts.Domain != proof.Domain {
-		return nil, ErrProofGeneration
+		return nil, fmt.Errorf("domain mismatch: %w", ErrProofGeneration)
 	}
 
 	if opts.Challenge != "" && opts.Challenge != proof.Challenge {
-		return nil, ErrProofGeneration
+		return nil, fmt.Errorf("challenge mismatch: %w", ErrProofGeneration)
 	}
 
 	proofRaw, err := json.Marshal(proof)
 	if err != nil {
-		return nil, ErrProofGeneration
+		return nil, fmt.Errorf("marshal proof: %w", errors.Join(ErrProofGeneration, err))
 	}
 
 	out, err := sjson.SetRawBytes(doc, proofPath, proofRaw)
 	if err != nil {
 		// TODO update linter to use go 1.20: https://github.com/hyperledger/aries-framework-go/issues/3613
-		return nil, errors.Join(ErrProofGeneration, err) // nolint:typecheck
+		return nil, fmt.Errorf("set proof: %w", errors.Join(ErrProofGeneration, err)) // nolint:typecheck
 	}
 
 	return out, nil

@@ -176,17 +176,17 @@ const (
 func (s *Suite) CreateProof(doc []byte, opts *models.ProofOptions) (*models.Proof, error) {
 	docHash, vmKey, _, err := s.transformAndHash(doc, opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("transform and hash: %w", err)
 	}
 
 	sig, err := sign(docHash, vmKey.JWK, s.signerGetter)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("signing: %w", err)
 	}
 
 	sigStr, err := multibase.Encode(multibase.Base58BTC, sig)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("encoding signature: %w", err)
 	}
 
 	var expires string
@@ -247,12 +247,12 @@ func (s *Suite) transformAndHash(doc []byte, opts *models.ProofOptions) ([]byte,
 
 	canonDoc, err := canonicalize(docData, s.ldLoader)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, fmt.Errorf("canonicalizing doc: %w", err)
 	}
 
 	canonConf, err := canonicalize(confData, s.ldLoader)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, fmt.Errorf("canonicalizing proof config: %w", err)
 	}
 
 	docHash := hashData(canonDoc, canonConf, h)
@@ -342,12 +342,16 @@ func proofConfig(docCtx interface{}, opts *models.ProofOptions) map[string]inter
 func sign(sigBase []byte, key *jwk.JWK, signerGetter SignerGetter) ([]byte, error) {
 	signer, err := signerGetter(key)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getting signer for key [%s]: %w", key.KeyID, err)
 	}
+
+	fmt.Printf("Signing with key ID [%s], Crv [%s], Kty [%s]\n", key.KeyID, key.Crv, key.Kty)
 
 	sig, err := signer.Sign(sigBase)
 	if err != nil {
-		return nil, err
+		fmt.Printf("Error signing with key ID [%s], Crv [%s], Kty [%s]: %s\n", key.KeyID, key.Crv, key.Kty, err)
+
+		return nil, fmt.Errorf("signing: %w", err)
 	}
 
 	return sig, nil
