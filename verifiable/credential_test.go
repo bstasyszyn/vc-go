@@ -165,8 +165,9 @@ func TestParseCredential(t *testing.T) {
 
 		// check credential status
 		require.NotNil(t, vcc.Status)
-		require.Equal(t, "https://example.edu/status/24", vcc.Status.ID)
-		require.Equal(t, "CredentialStatusList2017", vcc.Status.Type)
+		require.Len(t, vcc.Status, 1)
+		require.Equal(t, "https://example.edu/status/24", vcc.Status[0].ID)
+		require.Equal(t, "CredentialStatusList2017", vcc.Status[0].Type)
 
 		// check refresh service
 		require.NotNil(t, vcc.RefreshService)
@@ -2521,9 +2522,11 @@ func TestCredential_WithModified(t *testing.T) {
 			"VerifiableCredential",
 			"UniversityDegreeCredential",
 		},
-		Status: &TypedID{
-			ID:   "https://example.edu/status/24",
-			Type: "CredentialStatusList2017",
+		Status: []*TypedID{
+			{
+				ID:   "https://example.edu/status/24",
+				Type: "CredentialStatusList2017",
+			},
 		},
 		Subject: []Subject{subjectProto},
 		Issuer: &Issuer{
@@ -2559,8 +2562,9 @@ func TestCredential_WithModified(t *testing.T) {
 	require.Equal(t, "newID", cred.Contents().Subject[0].ID)
 	require.Equal(t, "newID", cred.Contents().Issuer.ID)
 	require.Equal(t, []string{"newContext"}, cred.Contents().Context)
-	require.Equal(t, "newID", cred.Contents().Status.ID)
-	require.Equal(t, "newType", cred.Contents().Status.Type)
+	require.Len(t, cred.Contents().Status, 1)
+	require.Equal(t, "newID", cred.Contents().Status[0].ID)
+	require.Equal(t, "newType", cred.Contents().Status[0].Type)
 	require.EqualValues(t, now, cred.Contents().Issued.Time)
 	require.EqualValues(t, expired, cred.Contents().Expired.Time)
 	require.EqualValues(t, "12345", cred.Contents().RefreshService.ID)

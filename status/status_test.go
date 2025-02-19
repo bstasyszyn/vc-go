@@ -47,7 +47,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 			Issuer: &verifiable.Issuer{
 				ID: issuerID,
 			},
-			Status: &verifiable.TypedID{
+			Status: []*verifiable.TypedID{{
 				ID:   "foo-bar",
 				Type: statuslist2021.StatusList2021Type,
 				CustomFields: map[string]interface{}{
@@ -56,7 +56,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 					statuslist2021.StatusListIndex:      "0",
 				},
 			},
-		}))
+			}}))
 		require.NoError(t, err)
 
 		// status: revoked
@@ -65,16 +65,16 @@ func TestClient_VerifyStatus(t *testing.T) {
 				ID: issuerID,
 			},
 
-			Status: &verifiable.TypedID{
+			Status: []*verifiable.TypedID{{
 				ID:   "foo-bar",
 				Type: statuslist2021.StatusList2021Type,
 				CustomFields: map[string]interface{}{
-					statuslist2021.StatusPurpose:        "foo",
+					statuslist2021.StatusPurpose:        StatusPurposeRevocation,
 					statuslist2021.StatusListCredential: statusServer.URL,
 					statuslist2021.StatusListIndex:      "1",
 				},
 			},
-		}))
+			}}))
 		require.Error(t, err)
 		require.Contains(t, err.Error(), RevokedMessage)
 	})
@@ -96,7 +96,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 				},
 			}
 			err := client.VerifyStatus(createTestCredential(t, verifiable.CredentialContents{
-				Status: &verifiable.TypedID{},
+				Status: []*verifiable.TypedID{{}},
 			}))
 			require.Error(t, err)
 			require.ErrorIs(t, err, expectErr)
@@ -113,7 +113,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 				},
 			}
 			err := client.VerifyStatus(createTestCredential(t, verifiable.CredentialContents{
-				Status: &verifiable.TypedID{},
+				Status: []*verifiable.TypedID{{}},
 			}))
 			require.Error(t, err)
 			require.ErrorIs(t, err, expectErr)
@@ -130,7 +130,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 				},
 			}
 			err := client.VerifyStatus(createTestCredential(t, verifiable.CredentialContents{
-				Status: &verifiable.TypedID{},
+				Status: []*verifiable.TypedID{{}},
 			}))
 			require.Error(t, err)
 			require.ErrorIs(t, err, expectErr)
@@ -147,7 +147,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 				},
 			}
 			err := client.VerifyStatus(createTestCredential(t, verifiable.CredentialContents{
-				Status: &verifiable.TypedID{},
+				Status: []*verifiable.TypedID{{}},
 			}))
 			require.Error(t, err)
 			require.ErrorIs(t, err, expectErr)
@@ -165,7 +165,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 				},
 			}
 			err := client.VerifyStatus(createTestCredential(t, verifiable.CredentialContents{
-				Status: &verifiable.TypedID{},
+				Status: []*verifiable.TypedID{{}},
 			}))
 			require.Error(t, err)
 			require.ErrorIs(t, err, expectErr)
@@ -188,7 +188,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 				Issuer: &verifiable.Issuer{
 					ID: "foo",
 				},
-				Status: &verifiable.TypedID{},
+				Status: []*verifiable.TypedID{{}},
 			}))
 			require.Error(t, err)
 			require.Contains(t, err.Error(), "issuer of the credential does not match status list vc issuer")
@@ -216,7 +216,7 @@ func TestClient_VerifyStatus(t *testing.T) {
 				},
 			}
 			err := client.VerifyStatus(createTestCredential(t, verifiable.CredentialContents{
-				Status: &verifiable.TypedID{},
+				Status: []*verifiable.TypedID{{}},
 				Issuer: &verifiable.Issuer{
 					ID: issuerID,
 				},
@@ -233,6 +233,8 @@ type mockValidator struct {
 	GetStatusVCURIErr     error
 	GetStatusListIndexVal int
 	GetStatusListIndexErr error
+	GetStatusPurposeVal   string
+	GetStatusPurposeErr   error
 }
 
 func (m *mockValidator) ValidateStatus(*verifiable.TypedID) error {
@@ -245,6 +247,10 @@ func (m *mockValidator) GetStatusVCURI(*verifiable.TypedID) (string, error) {
 
 func (m *mockValidator) GetStatusListIndex(*verifiable.TypedID) (int, error) {
 	return m.GetStatusListIndexVal, m.GetStatusListIndexErr
+}
+
+func (m *mockValidator) GetStatusPurpose(vcStatus *verifiable.TypedID) (string, error) {
+	return m.GetStatusPurposeVal, m.GetStatusPurposeErr
 }
 
 type mockResolver struct {

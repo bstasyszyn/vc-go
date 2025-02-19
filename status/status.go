@@ -18,8 +18,15 @@ import (
 )
 
 const (
+	// StatusPurposeRevocation is the purpose of the status list entry for revocation.
+	StatusPurposeRevocation = "revocation"
+	// StatusPurposeSuspension is the purpose of the status list entry for suspension.
+	StatusPurposeSuspension = "suspension"
+
 	// RevokedMessage is the Client.VerifyStatus error message when the given verifiable.Credential is revoked.
 	RevokedMessage = "revoked"
+	// SuspendedMessage is the Client.VerifyStatus error message when the given verifiable.Credential is suspended.
+	SuspendedMessage = "suspended"
 )
 
 // Client verifies revocation status for Verifiable Credentials.
@@ -28,64 +35,79 @@ type Client struct {
 	Resolver        api.StatusListVCURIResolver
 }
 
-// VerifyStatus verifies the revocation status on the given Verifiable Credential, returning the errorstring "revoked"
-// if the given credential's status is revoked, nil if the credential is not revoked, and a different error if
-// verification fails.
+// VerifyStatus verifies the revocation status on the given Verifiable Credential, returning the errorstring:
+// - "revoked" if the given credential's status is revoked
+// - "suspended" if the given credential's status is suspended
+// - nil if the credential is not revoked or suspended, and a different error if verification fails.
 func (c *Client) VerifyStatus(credential *verifiable.Credential) error { //nolint:gocyclo
 	contents := credential.Contents()
-	if contents.Status == nil {
+	if len(contents.Status) == 0 {
 		return errors.New("vc missing status list field")
 	}
 
-	validator, err := c.ValidatorGetter(contents.Status.Type)
-	if err != nil {
-		return err
-	}
+	for _, status := range contents.Status {
+		validator, err := c.ValidatorGetter(status.Type)
+		if err != nil {
+			return err
+		}
 
-	err = validator.ValidateStatus(contents.Status)
-	if err != nil {
-		return err
-	}
+		err = validator.ValidateStatus(status)
+		if err != nil {
+			return err
+		}
 
-	statusListIndex, err := validator.GetStatusListIndex(contents.Status)
-	if err != nil {
-		return err
-	}
+		statusListIndex, err := validator.GetStatusListIndex(status)
+		if err != nil {
+			return err
+		}
 
-	statusVCURL, err := validator.GetStatusVCURI(contents.Status)
-	if err != nil {
-		return err
-	}
+		statusVCURL, err := validator.GetStatusVCURI(status)
+		if err != nil {
+			return err
+		}
 
-	statusListVC, err := c.Resolver.Resolve(statusVCURL)
-	if err != nil {
-		return err
-	}
+		statusListVC, err := c.Resolver.Resolve(statusVCURL)
+		if err != nil {
+			return err
+		}
 
-	statusListVCC := statusListVC.Contents()
-	if statusListVCC.Issuer == nil || contents.Issuer == nil || statusListVCC.Issuer.ID != contents.Issuer.ID {
-		return errors.New("issuer of the credential does not match status list vc issuer")
-	}
+		statusListVCC := statusListVC.Contents()
+		if statusListVCC.Issuer == nil || contents.Issuer == nil || statusListVCC.Issuer.ID != contents.Issuer.ID {
+			return errors.New("issuer of the credential does not match status list vc issuer")
+		}
 
-	credSubject := statusListVCC.Subject
+		credSubject := statusListVCC.Subject
 
-	encodedList, ok := credSubject[0].CustomFields["encodedList"].(string)
-	if !ok {
-		return errors.New("encodedList must be a string")
-	}
+		encodedList, ok := credSubject[0].CustomFields["encodedList"].(string)
+		if !ok {
+			return errors.New("encodedList must be a string")
+		}
 
-	bitString, err := bitstring.Decode(encodedList)
-	if err != nil {
-		return fmt.Errorf("failed to decode bits: %w", err)
-	}
+		bitString, err := bitstring.Decode(encodedList)
+		if err != nil {
+			return fmt.Errorf("failed to decode bits: %w", err)
+		}
 
-	bitSet, err := bitstring.BitAt(bitString, statusListIndex)
-	if err != nil {
-		return err
-	}
+		bitSet, err := bitstring.BitAt(bitString, statusListIndex)
+		if err != nil {
+			return err
+		}
 
-	if bitSet {
-		return errors.New(RevokedMessage)
+		if bitSet {
+			purpose, err := validator.GetStatusPurpose(status)
+			if err != nil {
+				return err
+			}
+
+			switch purpose {
+			case StatusPurposeRevocation:
+				return errors.New(RevokedMessage)
+			case StatusPurposeSuspension:
+				return errors.New(SuspendedMessage)
+			default:
+				return fmt.Errorf("unsupported status purpose: %s", purpose)
+			}
+		}
 	}
 
 	return nil

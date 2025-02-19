@@ -193,6 +193,56 @@ func newNilableTypedID(v interface{}) (*TypedID, error) {
 	return &tid, err
 }
 
+func newTypedIDArray(v interface{}) ([]*TypedID, error) {
+	if v == nil {
+		return nil, nil
+	}
+
+	// single object
+	obj, ok := v.(JSONObject)
+	if ok {
+		tid, err := parseTypedIDObj(obj)
+		if err != nil {
+			return nil, err
+		}
+
+		return []*TypedID{&tid}, nil
+	}
+
+	// array of objects
+	arr, ok := v.([]JSONObject)
+	if !ok {
+		rawArray, ok := v.([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("should be array of json objects but got %v", v)
+		}
+
+		arr = make([]JSONObject, len(rawArray))
+
+		for i, raw := range rawArray {
+			obj, ok := raw.(JSONObject)
+			if !ok {
+				return nil, fmt.Errorf("should be json object but got %v", raw)
+			}
+
+			arr[i] = obj
+		}
+	}
+
+	tidArr := make([]*TypedID, len(arr))
+
+	for i, typedIDObj := range arr {
+		tid, err := parseTypedIDObj(typedIDObj)
+		if err != nil {
+			return nil, err
+		}
+
+		tidArr[i] = &tid
+	}
+
+	return tidArr, nil
+}
+
 func describeSchemaValidationError(result *gojsonschema.Result, what string) string {
 	errMsg := what + " is not valid:\n"
 	for _, desc := range result.Errors() {
