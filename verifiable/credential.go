@@ -245,334 +245,345 @@ const SchemaTemplateV1 = `{
 //
 // nolint: lll
 const SchemaTemplateV2 = `{
-  "$id": "https://www.w3.org/2022/credentials/v2/verifiable-credential-schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "JSON Schema for a Verifiable Credential according to the Verifiable Credentials Data Model v2",
-  "type": "object",
-  "$defs": {
-    "type": {
-      "oneOf": [
-        {
-          "type": "string"
+  "@context": {
+    "@protected": true,
+
+    "id": "@id",
+    "type": "@type",
+
+    "description": "https://schema.org/description",
+    "digestMultibase": {
+      "@id": "https://w3id.org/security#digestMultibase",
+      "@type": "https://w3id.org/security#multibase"
+    },
+    "digestSRI": {
+      "@id": "https://www.w3.org/2018/credentials#digestSRI",
+      "@type": "https://www.w3.org/2018/credentials#sriString"
+    },
+    "mediaType": {
+      "@id": "https://schema.org/encodingFormat"
+    },
+    "name": "https://schema.org/name",
+
+    "VerifiableCredential": {
+      "@id": "https://www.w3.org/2018/credentials#VerifiableCredential",
+      "@context": {
+        "@protected": true,
+
+        "id": "@id",
+        "type": "@type",
+
+        "confidenceMethod": {
+          "@id": "https://www.w3.org/2018/credentials#confidenceMethod",
+          "@type": "@id"
         },
-        {
-          "type": "array",
-          "minItems": 1
+        "credentialSchema": {
+          "@id": "https://www.w3.org/2018/credentials#credentialSchema",
+          "@type": "@id"
+        },
+        "credentialStatus": {
+          "@id": "https://www.w3.org/2018/credentials#credentialStatus",
+          "@type": "@id"
+        },
+        "credentialSubject": {
+          "@id": "https://www.w3.org/2018/credentials#credentialSubject",
+          "@type": "@id"
+        },
+        "description": "https://schema.org/description",
+        "evidence": {
+          "@id": "https://www.w3.org/2018/credentials#evidence",
+          "@type": "@id"
+        },
+        "issuer": {
+          "@id": "https://www.w3.org/2018/credentials#issuer",
+          "@type": "@id"
+        },
+        "name": "https://schema.org/name",
+        "proof": {
+          "@id": "https://w3id.org/security#proof",
+          "@type": "@id",
+          "@container": "@graph"
+        },
+        "refreshService": {
+          "@id": "https://www.w3.org/2018/credentials#refreshService",
+          "@type": "@id"
+        },
+        "relatedResource": {
+          "@id": "https://www.w3.org/2018/credentials#relatedResource",
+          "@type": "@id"
+        },
+        "renderMethod": {
+          "@id": "https://www.w3.org/2018/credentials#renderMethod",
+          "@type": "@id"
+        },
+        "termsOfUse": {
+          "@id": "https://www.w3.org/2018/credentials#termsOfUse",
+          "@type": "@id"
+        },
+        "validFrom": {
+          "@id": "https://www.w3.org/2018/credentials#validFrom",
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "validUntil": {
+          "@id": "https://www.w3.org/2018/credentials#validUntil",
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
         }
-      ]
+      }
     },
-    "credentialSubject": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
+
+    "EnvelopedVerifiableCredential":
+      "https://www.w3.org/2018/credentials#EnvelopedVerifiableCredential",
+
+    "VerifiablePresentation": {
+      "@id": "https://www.w3.org/2018/credentials#VerifiablePresentation",
+      "@context": {
+        "@protected": true,
+
+        "id": "@id",
+        "type": "@type",
+
+        "holder": {
+          "@id": "https://www.w3.org/2018/credentials#holder",
+          "@type": "@id"
+        },
+        "proof": {
+          "@id": "https://w3id.org/security#proof",
+          "@type": "@id",
+          "@container": "@graph"
+        },
+        "termsOfUse": {
+          "@id": "https://www.w3.org/2018/credentials#termsOfUse",
+          "@type": "@id"
+        },
+        "verifiableCredential": {
+          "@id": "https://www.w3.org/2018/credentials#verifiableCredential",
+          "@type": "@id",
+          "@container": "@graph",
+          "@context": null
         }
-      },
-      "minProperties": 1
+      }
     },
-    "credentialSchema": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/$defs/type"
+
+    "EnvelopedVerifiablePresentation":
+      "https://www.w3.org/2018/credentials#EnvelopedVerifiablePresentation",
+
+    "JsonSchemaCredential":
+      "https://www.w3.org/2018/credentials#JsonSchemaCredential",
+
+    "JsonSchema": {
+      "@id": "https://www.w3.org/2018/credentials#JsonSchema",
+      "@context": {
+        "@protected": true,
+
+        "id": "@id",
+        "type": "@type",
+
+        "jsonSchema": {
+          "@id": "https://www.w3.org/2018/credentials#jsonSchema",
+          "@type": "@json"
         }
-      },
-      "required": [
-        "id",
-        "type"
-      ],
-      "additionalProperties": true
+      }
     },
-    "credentialStatus": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
+
+    "BitstringStatusListCredential":
+      "https://www.w3.org/ns/credentials/status#BitstringStatusListCredential",
+
+    "BitstringStatusList": {
+      "@id": "https://www.w3.org/ns/credentials/status#BitstringStatusList",
+      "@context": {
+        "@protected": true,
+
+        "id": "@id",
+        "type": "@type",
+
+        "encodedList": {
+          "@id": "https://www.w3.org/ns/credentials/status#encodedList",
+          "@type": "https://w3id.org/security#multibase"
         },
-        "type": {
-          "$ref": "#/$defs/type"
-        }
-      },
-      "required": [
-        "id",
-        "type"
-      ],
-      "additionalProperties": true
+        "statusPurpose":
+          "https://www.w3.org/ns/credentials/status#statusPurpose",
+        "ttl": "https://www.w3.org/ns/credentials/status#ttl"
+      }
     },
-    "refreshService": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
+
+    "BitstringStatusListEntry": {
+      "@id":
+        "https://www.w3.org/ns/credentials/status#BitstringStatusListEntry",
+      "@context": {
+        "@protected": true,
+
+        "id": "@id",
+        "type": "@type",
+
+        "statusListCredential": {
+          "@id":
+            "https://www.w3.org/ns/credentials/status#statusListCredential",
+          "@type": "@id"
         },
-        "type": {
-          "$ref": "#/$defs/type"
-        }
-      },
-      "required": [
-        "id",
-        "type"
-      ],
-      "additionalProperties": true
-    },
-    "termsOfUse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/$defs/type"
-        }
-      },
-      "required": [
-        "type"
-      ],
-      "additionalProperties": true
-    },
-    "evidence": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/$defs/type"
-        }
-      },
-      "required": [
-        "type"
-      ],
-      "additionalProperties": true
-    },
-    "proof": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "#/$defs/type"
-        },
-        "proofPurpose": {
-          "type": "string"
-        },
-        "verificationMethod": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "minItems": 1,
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  },
-                  "type": {
-                    "type": "string"
-                  },
-                  "controller": {
-                    "type": "string"
-                  }
-                },
-                "required": ["id", "type", "controller"],
-                "additionalProperties": true
-              }
-            }
-          ]
-        },
-        "created": {
-          "type": "string"
-        },
-        "domain": {
-          "type": "string"
-        },
-        "challenge": {
-          "type": "string"
-        },
-        "proofValue": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type",
-        "proofPurpose",
-        "verificationMethod"
-      ],
-      "additionalProperties": true
-    },
-    "proofChain": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/proof"
-      },
-      "minItems": 1
-    }
-  },
-  "properties": {
-    "@context": {
-      "type": "array",
-      "contains": {
-        "const": "https://www.w3.org/ns/credentials/v2"
-      },
-      "minItems": 1
-    },
-    "id": {
-      "type": "string"
-    },
-    "type": {
-      "oneOf": [
-        {
-          "type": "array",
-          "contains": {
-            "const": "VerifiableCredential"
+        "statusListIndex":
+          "https://www.w3.org/ns/credentials/status#statusListIndex",
+        "statusPurpose":
+          "https://www.w3.org/ns/credentials/status#statusPurpose",
+        "statusMessage": {
+          "@id": "https://www.w3.org/ns/credentials/status#statusMessage",
+          "@context": {
+            "@protected": true,
+
+            "id": "@id",
+            "type": "@type",
+
+            "message": "https://www.w3.org/ns/credentials/status#message",
+            "status": "https://www.w3.org/ns/credentials/status#status"
           }
         },
-        {
-          "type": "string",
-          "enum": ["VerifiableCredential"]
-        }
-      ]
-    },
-    "issuer": {
-      "oneOf": [
-        {
-          "type": "string"
+        "statusReference": {
+          "@id": "https://www.w3.org/ns/credentials/status#statusReference",
+          "@type": "@id"
         },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
+        "statusSize": {
+          "@id": "https://www.w3.org/ns/credentials/status#statusSize",
+          "@type": "https://www.w3.org/2001/XMLSchema#integer"
+        }
+      }
+    },
+
+    "DataIntegrityProof": {
+      "@id": "https://w3id.org/security#DataIntegrityProof",
+      "@context": {
+        "@protected": true,
+
+        "id": "@id",
+        "type": "@type",
+
+        "challenge": "https://w3id.org/security#challenge",
+        "created": {
+          "@id": "http://purl.org/dc/terms/created",
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "cryptosuite": {
+          "@id": "https://w3id.org/security#cryptosuite",
+          "@type": "https://w3id.org/security#cryptosuiteString"
+        },
+        "domain": "https://w3id.org/security#domain",
+        "expires": {
+          "@id": "https://w3id.org/security#expiration",
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "nonce": "https://w3id.org/security#nonce",
+        "previousProof": {
+          "@id": "https://w3id.org/security#previousProof",
+          "@type": "@id"
+        },
+        "proofPurpose": {
+          "@id": "https://w3id.org/security#proofPurpose",
+          "@type": "@vocab",
+          "@context": {
+            "@protected": true,
+
+            "id": "@id",
+            "type": "@type",
+
+            "assertionMethod": {
+              "@id": "https://w3id.org/security#assertionMethod",
+              "@type": "@id",
+              "@container": "@set"
+            },
+            "authentication": {
+              "@id": "https://w3id.org/security#authenticationMethod",
+              "@type": "@id",
+              "@container": "@set"
+            },
+            "capabilityDelegation": {
+              "@id": "https://w3id.org/security#capabilityDelegationMethod",
+              "@type": "@id",
+              "@container": "@set"
+            },
+            "capabilityInvocation": {
+              "@id": "https://w3id.org/security#capabilityInvocationMethod",
+              "@type": "@id",
+              "@container": "@set"
+            },
+            "keyAgreement": {
+              "@id": "https://w3id.org/security#keyAgreementMethod",
+              "@type": "@id",
+              "@container": "@set"
             }
-          },
-          "required": [
-            "id"
-          ],
-          "additionalProperties": true
-        }
-      ]
-    },
-    "validFrom": {
-      "type": "string",
-      "pattern": "-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?|(24:00:00(\\.0+)?))(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))"
-    },
-    "validUntil": {
-      "type": "string",
-      "pattern": "-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?|(24:00:00(\\.0+)?))(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))"
-    },
-    "credentialSubject": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/credentialSubject"
+          }
         },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/credentialSubject"
-          },
-          "minItems": 1
-        }
-      ]
-    },
-    "credentialStatus": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/credentialStatus"
+        "proofValue": {
+          "@id": "https://w3id.org/security#proofValue",
+          "@type": "https://w3id.org/security#multibase"
         },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/credentialStatus"
-          },
-          "minItems": 1
+        "verificationMethod": {
+          "@id": "https://w3id.org/security#verificationMethod",
+          "@type": "@id"
         }
-      ]
+      }
     },
-    "credentialSchema": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/credentialSchema"
+
+    "...": {
+      "@id": "https://www.iana.org/assignments/jwt#..."
+    },
+    "_sd": {
+      "@id": "https://www.iana.org/assignments/jwt#_sd",
+      "@type": "@json"
+    },
+    "_sd_alg": {
+      "@id": "https://www.iana.org/assignments/jwt#_sd_alg"
+    },
+    "aud": {
+      "@id": "https://www.iana.org/assignments/jwt#aud",
+      "@type": "@id"
+    },
+    "cnf": {
+      "@id": "https://www.iana.org/assignments/jwt#cnf",
+      "@context": {
+        "@protected": true,
+
+        "kid": {
+          "@id": "https://www.iana.org/assignments/jwt#kid",
+          "@type": "@id"
         },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/credentialSchema"
-          },
-          "minItems": 1
+        "jwk": {
+          "@id": "https://www.iana.org/assignments/jwt#jwk",
+          "@type": "@json"
         }
-      ]
+      }
     },
-    "refreshService": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/refreshService"
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/refreshService"
-          },
-          "minItems": 1
-        }
-      ]
+    "exp": {
+      "@id": "https://www.iana.org/assignments/jwt#exp",
+      "@type": "https://www.w3.org/2001/XMLSchema#nonNegativeInteger"
     },
-    "termsOfUse": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/termsOfUse"
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/termsOfUse"
-          },
-          "minItems": 1
-        }
-      ]
+    "iat": {
+      "@id": "https://www.iana.org/assignments/jwt#iat",
+      "@type": "https://www.w3.org/2001/XMLSchema#nonNegativeInteger"
     },
-    "evidence": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/evidence"
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/evidence"
-          },
-          "minItems": 1
-        }
-      ]
+    "iss": {
+      "@id": "https://www.iana.org/assignments/jose#iss",
+      "@type": "@id"
     },
-    "proof": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/proof"
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/proof"
-          },
-          "minItems": 1
-        }
-      ]
+    "jku": {
+      "@id": "https://www.iana.org/assignments/jose#jku",
+      "@type": "@id"
     },
-    "proofChain": {
-      "$ref": "#/$defs/proofChain"
+    "kid": {
+      "@id": "https://www.iana.org/assignments/jose#kid",
+      "@type": "@id"
+    },
+    "nbf": {
+      "@id": "https://www.iana.org/assignments/jwt#nbf",
+      "@type": "https://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+    },
+    "sub": {
+      "@id": "https://www.iana.org/assignments/jose#sub",
+      "@type": "@id"
+    },
+    "x5u": {
+      "@id": "https://www.iana.org/assignments/jose#x5u",
+      "@type": "@id"
     }
-  },
-  "required": [
-    "@context"
-    %s
-  ],
-  "additionalProperties": true
-}
-`
+  }
+}`
 
 const (
 	// https://www.w3.org/TR/vc-data-model/#data-schemas
